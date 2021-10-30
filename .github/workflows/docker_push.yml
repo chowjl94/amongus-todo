@@ -31,15 +31,6 @@ jobs:
       - name: Run tests
         run: npm test
 
-  # snyk-security-scan:
-  #   needs: [run-npm-tests]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Run Snyk to check for vulnerabilities
-  #       uses: snyk/actions/node@master
-  #       env:
-  #         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
 # Run a docker build -> push-> scan -> login-> push
   docker-scan-build-push:
@@ -61,6 +52,7 @@ jobs:
         with: 
           push: true
           tags: chowjl94/cicd-workflow-d3:latest
+
 
       #Run a security check against the docker image
       - name: Run Snyk to check Docker images for vulnerabilities
