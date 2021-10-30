@@ -43,7 +43,7 @@ jobs:
 
 # Run a docker build -> push-> scan -> login-> push
   docker-scan-build-push:
-    needs: [ run-npm-tests, snyk-security-scan ]
+    needs: [ run-npm-tests ]
     runs-on: ubuntu-latest
     steps:
 
