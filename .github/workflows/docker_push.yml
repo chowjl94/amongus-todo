@@ -49,8 +49,9 @@ jobs:
     # first export 
       - name: Build and push
         uses: docker/build-push-action@v2
-        with: 
-          push: true
+        with:
+          context: . 
+          load: true
           tags: chowjl94/cicd-workflow-d3:latest
 
 
