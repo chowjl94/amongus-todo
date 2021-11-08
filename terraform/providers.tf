@@ -7,8 +7,15 @@ terraform {
     }
   }
 
-  backend "local" {
-    path = "./local.terraform.tfstate"
+#   backend "local" {
+#     path = "./local.terraform.tfstate"
+#   }
+  backend "remote" {
+    organization = "cicd-dev"
+
+    workspaces {
+      name = "cicd-dev"
+    }
   }
 }
 
