@@ -25,7 +25,6 @@ jobs:
 
 # Run a docker build -> push-> scan -> login-> push
   docker-scan-build-push:
-    needs: [ run-npm-tests ]
     runs-on: ubuntu-latest
     steps:
 
@@ -52,6 +51,7 @@ jobs:
         uses: snyk/actions/docker@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          
         with:
           image: chowjl94/cicd-workflow-d3:latest
           args: --severity-threshold=high
