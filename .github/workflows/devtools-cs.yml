@@ -69,22 +69,49 @@ jobs:
         with: 
           push: true
           tags: chowjl94/cicd-workflow-d3:latest
-  
-  ssh:
+
+
+  aws-setup-deploy:
     runs-on: ubuntu-latest
+
+    outputs:
+      instances_data: ${{ steps.instances-data.outputs.instances_data }}
+      instances_count: ${{ steps.instances-data.outputs.instances_count }}
     steps:
-      -
-        uses: actions/checkout@v2
-        name: Checkout
-      -
-        name: Pull docker image and run container
-        uses: appleboy/ssh-action@master
+      - 
+        name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          host: ${{secrets.HOST}}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.RSA }}
-          port: 22
-          script: |
-            whoami
-            docker pull chowjl94/cicd-workflow-d3:latest
-            docker run -d --restart always -p 80:3000 chowjl94/cicd-workflow-d3:latest
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEYID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ap-southeast-1
+      -
+        name: Get Instance Data
+        id: instances-data
+        run: |
+          OUTPUT=`aws ec2 describe-instances \
+            --filters "Name=tag:Name,Values=${EC2_INSTANCE_PREFIX}*" "Name=instance-state-name,Values=running" \
+            --query "Reservations[*].Instances[*].PublicDnsName" \
+            --output json | jq -c '{include: map({public_dns: .[]})}'`
+          echo "::set-output name=instances_data::$OUTPUT"
+          LENGTH=`echo $OUTPUT | jq '.[] | length'`
+          echo "::set-output name=instances_count::$LENGTH"
+  
+  # ssh:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     -
+  #       uses: actions/checkout@v2
+  #       name: Checkout
+  #     -
+  #       name: Pull docker image and run container
+  #       uses: appleboy/ssh-action@master
+  #       with:
+  #         host: ${{secrets.HOST}}
+  #         username: ${{ secrets.SSH_USER }}
+  #         key: ${{ secrets.RSA }}
+  #         port: 22
+  #         script: |
+  #           whoami
+  #           docker pull chowjl94/cicd-workflow-d3:latest
+  #           docker run -d --restart always -p 80:3000 chowjl94/cicd-workflow-d3:latest
