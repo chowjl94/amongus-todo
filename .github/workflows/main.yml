@@ -1,4 +1,4 @@
-name: ci
+name: ssh
 on: 
   pull_request:
 
