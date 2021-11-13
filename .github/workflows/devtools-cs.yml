@@ -77,6 +77,9 @@ jobs:
 
   aws-setup-deploy:
     runs-on: ubuntu-latest
+    outputs: 
+      my-instances: ${{steps.instances-data.outputs.my-instances}}
+      num-instances: ${{steps.instances-data.outputs.num-instances}}
     steps:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -84,12 +87,16 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEYID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
         aws-region: ${{ env.AWS_REGION }}
-    - name: Get instances
-      id: get-instance
-      run: output=`aws ec2 describe-instances \
+    - name: Get instance
+      id: instances-data
+      run: OUTPUT=`aws ec2 describe-instances \
         --filters Name=instance-type,Values=t2.micro \
         --query Reservations[*].Instances[*].[InstanceId] \
         --output text`
+        echo "set-output name=my-instances::$OUTPUT"
+        LENGTH=`echo $OUTPUT | jq '.[] | length'`
+        echo "::set-output name=num_instances::$LENGTH"
+
 
 
 
