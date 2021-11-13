@@ -89,13 +89,17 @@ jobs:
         aws-region: ${{ env.AWS_REGION }}
     - name: Get instance
       id: instances-data
-      run: OUTPUT=`aws ec2 describe-instances \
-        --filters Name=instance-type,Values=t2.micro \
-        --query Reservations[*].Instances[*].[InstanceId] \
-        --output text`
+      run: |
+        OUTPUT=`aws ec2 describe-instances \
+          --filters Name=tag-key,Values=Name \
+          --query 'Reservations[*].Instances[*].{Instance:InstanceId,AZ:Placement.AvailabilityZone,Name:Tags[?Key==`Name`]|[0].Value}' \
+          --output table`
         echo "set-output name=my-instances::$OUTPUT"
         LENGTH=`echo $OUTPUT | jq '.[] | length'`
         echo "::set-output name=num_instances::$LENGTH"
+
+
+
 
 
 
