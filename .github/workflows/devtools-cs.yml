@@ -75,52 +75,26 @@ jobs:
           tags: chowjl94/cicd-workflow-d3:latest
 
 
-  aws-setup-deploy:
+  aws-setup-deploy-ssh:
     runs-on: ubuntu-latest
-    outputs: 
-      my-instances: ${{steps.instances-data.outputs.my-instances}}
-      num-instances: ${{steps.instances-data.outputs.num-instances}}
     steps:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEYID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
-    - name: Get instance
-      id: instances-data
-      run: |
-        OUTPUT=`aws ec2 describe-instances \
-          --filters Name=instance-type,Values=t2.micro \
-          --query Reservations[*].Instances[*].[InstanceId] \
-          --output text`
-        echo "set-output name=my-instances::$OUTPUT"
-        LENGTH=`echo $OUTPUT | jq '.[] | length'`
-        echo "::set-output name=num_instances::$LENGTH"
+        aws-region: ${{ env.AWS_REGION }}     
+    - name: Checkout
+      uses: actions/checkout@v2
 
-
-
-
-
-
-
-      
-  
-  # ssh:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     -
-  #       uses: actions/checkout@v2
-  #       name: Checkout
-  #     -
-  #       name: Pull docker image and run container
-  #       uses: appleboy/ssh-action@master
-  #       with:
-  #         host: ${{secrets.HOST}}
-  #         username: ${{ secrets.SSH_USER }}
-  #         key: ${{ secrets.RSA }}
-  #         port: 22
-  #         script: |
-  #           whoami
-  #           docker pull chowjl94/cicd-workflow-d3:latest
-  #           docker run -d --restart always -p 80:3000 chowjl94/cicd-workflow-d3:latest
+    - name: Pull docker image and run container
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{secrets.HOST}}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.RSA }}
+        port: 22
+        script: |
+          whoami
+          docker pull chowjl94/cicd-workflow-d3:latest
+          docker run -d --restart always -p 80:3000 chowjl94/cicd-workflow-d3:latest  
