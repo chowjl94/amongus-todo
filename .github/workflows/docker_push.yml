@@ -3,7 +3,7 @@ name: Docker Push image
 ### Trigger on push to branch
 on:
   push:
-    branches: [master]
+    branches: ['cicd-day3']
 
 ### env variables
 env:
