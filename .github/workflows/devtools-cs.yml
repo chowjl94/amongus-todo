@@ -95,6 +95,7 @@ jobs:
         key: ${{ secrets.RSA }}
         port: 22
         script: |
+          whoami
           sudo yum update
           docker stop cicd-workflow-d3
           docker rm cicd-workflow-d3
