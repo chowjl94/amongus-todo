@@ -94,7 +94,7 @@ jobs:
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.RSA }}
         port: 22
-        script: |
+        script: | 
           whoami
           sudo yum update
           docker stop cicd-workflow-d3
