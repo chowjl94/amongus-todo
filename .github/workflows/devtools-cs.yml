@@ -93,7 +93,7 @@ jobs:
         host: ${{secrets.SSH_HOST}}
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.RSA }}
-        # port: 22
+        port: 22
         script: |
           whoami
           sudo yum update
